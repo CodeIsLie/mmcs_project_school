@@ -57,10 +57,8 @@ public class Main extends Application {
 
         public void go() {
             //все типы задач
-            String[] typesOfTaskes = {"с обыкновенными дробями","с десятичными дробями",
-                    "С обыкновен. и десятичн. дробями",  "с положит. и отриц. числами", "Неравенства",
-                    "Линейное уравнение", "Квадратные уравнения",
-                    "Системы уранений"};
+            String[] typesOfTaskes = {"Десятичные дроби", "Положит. и отриц. числа", "Неравенство",
+                    "Линейное уравнение"};
             names = new ArrayList<String>();
             for (int i = 0; i < typesOfTaskes.length; ++i)
                 names.add(typesOfTaskes[i]);
@@ -343,9 +341,9 @@ public class Main extends Application {
                         case 1:
                             return gen.print(gen.simple_ex(_difficult));
                         case 2:
-                            return gen.print(gen.simple_ex(_difficult));
+                            return gen.print(gen.inequality(_difficult));
                         case 3:
-                            return gen.print(gen.simple_ex(_difficult));
+                            return gen.print(gen.equation(_difficult));
                         case 4:
                             return gen.print(gen.simple_ex(_difficult));
                         case 5:
