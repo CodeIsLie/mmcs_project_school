@@ -1,5 +1,6 @@
 package sample;
 
+import com.sun.javaws.progress.Progress;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -12,6 +13,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.io.*;
 import java.util.HashMap;
@@ -116,7 +118,6 @@ public class Main extends Application {
                         Image img = new ImageIcon(Main.class.getResource(background)).getImage();
                         g.drawImage(img, 0, 0, null);
                     } catch (Exception ex) {
-                        //Logger.getLogger(JFrame.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
             };
@@ -151,11 +152,6 @@ public class Main extends Application {
             rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
             JPanel backgroundPanel = new JPanel() {
                 private String background = "/images/background1.jpg";
-                //private URL imgFile = Main.class.getResource(background);
-                /*public void changePicture(String imgFile) {
-                    this.imgFile = Main.class.getResource("/images/" + imgFile);
-                    repaint();
-                }*/
                 public void paint(Graphics g) {
                     super.paint(g);
                     try {
@@ -259,7 +255,7 @@ public class Main extends Application {
             rightPanel.add(variants);
             rightPanel.add(verticalEdge);
             rightPanel.add(createButton);
-            //rightPanel.add(TestText);
+            rightPanel.add(TestText);
 
             JLayeredPane layeredPane = new JLayeredPane();
             layeredPane.setPreferredSize(new Dimension(360, 460));
@@ -368,7 +364,7 @@ public class Main extends Application {
 
         //код для создания контрольной
         class CreateButtonListener implements ActionListener{
-            String filename;// = "D:\\java\\fileSchool.txt";
+            String filename;
             public void actionPerformed(ActionEvent event){
                 //кол-во вариантов
                 int numberV = 0;
@@ -396,31 +392,103 @@ public class Main extends Application {
                     filename = getSavePath();
                     if (filename == null)
                         return;
-                    TestText.setText(filename);
-                    FileWriter writer = new FileWriter(filename, false);
-                    writer.close();
-                    for (int j =0; j < numberV; ++j) {
-                        FileWriter writeVariants = new FileWriter(filename, true);
-                        writeVariants.write("Вариант " + (j + 1) + "\n");
-                        for (int i = 0; i < listPanel.size(); ++i) {
-                            Example example = panelMap.get(listPanel.get(i));
-                            writeVariants.write((i + 1) + ". " + example.createExample(filename) + "\n");
-                        }
-                        writeVariants.write("\n");
-                        writeVariants.close();
-                    }
+                    //TestText.setText(filename);
+                    String texName = "./" + new File(stripExtension(filename)).getName(); //"./doc";
+                    TestText.setText(texName);
+                    createTexFile(numberV, texName);
+                    createPDF(filename, texName);
                 }
                 catch (Exception ex){
                     TestText.setText(ex.getMessage());
                 }
 
             }
+
+            String stripExtension (String str) {
+                // Handle null case specially.
+                if (str == null) return null;
+                // Get position of last '.'.
+                int pos = str.lastIndexOf(".");
+                // If there wasn't any '.' just return the string as is.
+                if (pos == -1) return str;
+                // Otherwise return the string, up to the dot.
+
+                return str.substring(0, pos);
+            }
+
+            //создает tex-файл, n - кол-во вариантов
+            void createTexFile(int n, String texName){
+                texName += ".tex";
+                try {
+                    FileWriter writer = new FileWriter(texName, false);
+                    String preambule = "\\documentclass[a4paper,12pt,leqno]{article}\n \\usepackage{mathtext} \n" +
+                     "\\usepackage[T2A]{fontenc}\n \\usepackage[utf8]{inputenc}\t\n  " +
+                     "\\usepackage[english,russian]{babel}\n \\usepackage{amsmath,amsfonts,amssymb,amsthm,mathtools}\n" +
+                    "\\usepackage{icomma}\n \\usepackage{mathrsfs} \n";
+                    writer.write(preambule);
+                    writer.close();
+                    FileWriter writeVariants = new FileWriter(texName, true);
+                    writeVariants.write("\\begin{document}\n");
+                    for (int j = 0; j < n; ++j) {
+                        writeVariants.write("\\begin{center}\n Вариант " + (j + 1) + "\n\\end{center}\n\n");
+                        for (int i = 0; i < listPanel.size(); ++i) {
+                            Example example = panelMap.get(listPanel.get(i));
+                            writeVariants.write((i + 1) + ". $" + example.createExample(texName) + "$\n\n");
+                        }
+                        writeVariants.write("\n\n");
+
+                    }
+                    writeVariants.write("\\end{document}");
+                    writeVariants.close();
+                }
+                catch (Exception ex){
+
+                }
+            }
+
+            //создает PDF файл с помощью Latex, из уже сформированного .tex файла
+            void createPDF(String filename, String texFile){
+                Process p;
+                Process p1;
+                try{
+                    String dir = new File(filename).getParent();
+                    TestText.setText(dir);
+
+                    String path = "C:\\texlive\\2016\\bin\\win32\\";
+                    String latex = path + "pdflatex.exe";
+                    String file = texFile + ".tex";
+                    String command = latex + " -synctex=1 -interaction=nonstopmode " + file;
+                    TestText.setText(command);
+
+                    String totalCommand = command;
+                    TestText.setText("hm, error");
+                    p = Runtime.getRuntime().exec(totalCommand);
+                    p.waitFor();
+                    /*
+                    //p.destroy();
+                    String pdfName = texFile + ".pdf";
+                    String resultFile = dir + "/" + new File(pdfName).getName();
+                    TestText.setText(resultFile);*/
+
+                    /*if (new File(resultFile).exists())
+                        new File(resultFile).delete();
+
+                    String move = "move " + pdfName + " " + dir;
+                    p1 = Runtime.getRuntime().exec(move);
+                    p1.waitFor();
+                    p1.destroy();*/
+                }
+                catch (Exception ex){
+                    TestText.setText("error: create pdf file");
+                }
+            }
+
             //выбирает и возвращает имя файла для сохранения
             String getSavePath() {
                 try {
                     final FileDialog fdg = new FileDialog(frameConstructor, "Выберите файл", FileDialog.SAVE);
                     fdg.setDirectory("D:\\");
-                    fdg.setFile("control.txt");
+                    fdg.setFile("control.pdf");
                     fdg.setVisible(true);
                     final String dir = fdg.getDirectory();
                     final String file = fdg.getFile();
@@ -692,6 +760,7 @@ public class Main extends Application {
                 }
             }
 
+            //простой пример - на отрицательные и положительные числа
             Treenode simple_ex(int complexity)
             {
                 Treenode res = null;
