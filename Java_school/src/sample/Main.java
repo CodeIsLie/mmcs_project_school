@@ -737,7 +737,41 @@ public class Main extends Application {
                 t.right = new Treenode(symb);
             }
 
+            /*неравенство*/
+            Treenode  inequality(int complexity)
+            {
+                Treenode res = new Treenode((int)(Math.random() *4) - 9);
+                res.left = new Treenode ((int)(Math.random() * 20) + 1);
+                res.right = new Treenode (res.left.data+ (int)(Math.random() * 3) - 1);
+                for (int i = 0; i < complexity; ++i)
+                {
+                    res.left = simle_ex_creating(complexity, res.left);
+                }
+                for (int i = 0; i < complexity; ++i)
+                {
+                    res.right = simle_ex_creating(complexity, res.right);
+                }
+                insertx(res.left);
+                return res;
+            }
 
+            /*уравнение*/
+            Treenode equation(int complexity)
+            {
+                Treenode  res = new Treenode(-5);
+                for (int i = 0; i < complexity; ++i)
+                {
+                    res.left = simle_ex_creating(complexity, res.left);
+                }
+                for (int i = 0; i < complexity; ++i)
+                {
+                    res.right = simle_ex_creating(complexity, res.right);
+                }
+                insertx(res.left);
+                if(Math.random() % 2 == 0)
+                    insertx(res.right);
+                return res;
+            }
         }
 
     }
