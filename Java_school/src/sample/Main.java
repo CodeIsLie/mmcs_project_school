@@ -335,7 +335,7 @@ public class Main extends Application {
             }
 
             String createExample(String filename){
-                /*try{
+                try{
                     TreeGenAlgs gen = new TreeGenAlgs();
                     switch (_typeExample){
                         case 0:
@@ -347,9 +347,9 @@ public class Main extends Application {
                         case 3:
                             return gen.print(gen.simple_ex(_difficult));
                         case 4:
-                            return gen.print(gen.inequality(_difficult));
+                            return gen.print(gen.simple_ex(_difficult));
                         case 5:
-                            return gen.print(gen.equation(_difficult));
+                            return gen.print(gen.simple_ex(_difficult));
                         case 6:
                             return gen.print(gen.simple_ex(_difficult));
                         case 7:
@@ -360,7 +360,7 @@ public class Main extends Application {
                 }
                 catch (Exception ex){
                     TestText.setText(ex.getMessage());
-                }*/
+                }
                 return "8";
             }
 
@@ -488,6 +488,256 @@ public class Main extends Application {
                 frameTasks.repaint();
                 frameTasks.validate();
             }
+        }
+
+        //класс генерации примеров
+        class TreeGenAlgs{
+            String stringToBox;
+            TreeGenAlgs(){
+                stringToBox = "";
+            }
+
+            class Treenode {
+                int data;
+                Treenode left;
+                Treenode right;
+                int leftBrackets;
+                int rightBrackets;
+
+                Treenode(int _data, Treenode _left, Treenode _right, int l, int r)
+                {
+                    data = _data;
+                    left = _left;
+                    right = _right;
+                    leftBrackets = l;
+                    rightBrackets = r;
+                }
+
+                Treenode(int _data){
+                    data = _data;
+                    left = null;
+                    right = null;
+                    leftBrackets = 0;
+                    rightBrackets = 0;
+                }
+
+            }
+
+            //возвращает делитель
+            int getGCD(int digit){
+                if (digit == 1)
+                    return 1;
+
+                int divider = 1;
+                double sqr = Math.sqrt(digit);
+                for (int i = 2; i < sqr; ++i){
+                    while ((digit % i) == 0) {
+                        digit /= i;
+                        divider *= i;
+                        if ((int)(Math.random() * 2) == 0)
+                            return divider;
+                    }
+                    if (digit == 1)
+                        break;
+                }
+                return divider;
+            }
+
+            //доделать
+            Treenode simle_ex_creating(int complexity, Treenode t)
+            {
+                if (t == null)
+                {
+                    Treenode res = new Treenode ((int) (Math.random() * 5* complexity));
+                    return res;
+                }
+                else
+                {
+                    int curvel = t.data;
+                    int op = (int) ((Math.random() * 4) + 1);
+                    if ((t.left == null) && (t.right == null))
+                    {
+                        //+
+                        if (op == 1)
+                        {
+                            int dx = (int)(Math.random() * 5 * complexity) + 1;
+                            t.left = new Treenode (dx);
+                            t.right = new Treenode (curvel - dx);
+                            if (t.right.data < 0){
+                                t.data = -2;
+                                t.right.data = Math.abs(t.right.data);
+                            }
+                            else
+                                t.data = -op;
+                        }
+                        //-
+                        if (op == 2)
+                        {
+                            int dx = (int)(Math.random() * 10) * complexity + 1;
+                            t.left = new Treenode (curvel + dx);
+                            t.right = new Treenode (dx);
+                            t.data = -op;
+                        }
+                        //*
+                        if (op == 3)
+                        {
+                            int dx1 = getGCD((int)curvel);
+                            if (dx1 == 1 || dx1 == curvel)
+                                op = 4;
+                            else {
+                                int dx2 = curvel / dx1;
+                                t.left = new Treenode(dx1);
+                                t.right = new Treenode(dx2);
+                                t.data = -op;
+                            }
+                        }
+                        // /
+                        if (op == 4)
+                        {
+                            int dx = (int) ((Math.random() * 10) * complexity + 1);
+                            t.left = new Treenode (curvel * dx);
+                            t.right = new Treenode (dx);
+                            t.data = -op;
+                        }
+                    }
+                    else
+                    {
+                        t.left = simle_ex_creating(complexity,t.left);
+                        t.right = simle_ex_creating(complexity, t.right);
+                    }
+                    return t;
+                }
+            }
+
+            //возвращает текущий пример в виде строки
+            String print(Treenode t){
+                stringToBox = "";
+                if (t != null)
+                    _print(t);
+                return stringToBox;
+            }
+
+            void _print(Treenode  t) {
+                if (t.left != null) {
+                    t.left.leftBrackets = t.leftBrackets;
+                    //t.left.rightBrackets = t.rightBrackets;
+                    if (t.data == -4 || (t.data == -3 && (t.left.data == -1 || t.left.data == -2))) {
+                        if (t.left.data < 0) {
+                            t.left.leftBrackets += 1;
+                            t.left.rightBrackets += 1;
+                        }
+                    }
+                    _print(t.left);
+                }
+
+                String data = "";
+                switch ((int)t.data){
+                    case -1:
+                        data = "+";
+                        break;
+                    case -2:
+                        data = "-";
+                        break;
+                    case -3:
+                        data = "*";
+                        break;
+                    case -4:
+                        data = "/";
+                        break;
+                    case -5:
+                        data = "=";
+                        break;
+                    case -6:
+                        data = "<";
+                        break;
+                    case -7:
+                        data = ">";
+                        break;
+                    case -8:
+                        data = "<=";
+                        break;
+                    case -9:
+                        data = ">=";
+                        break;
+                    case -10:
+                        data = "x";
+                        break;
+                    default:
+                        data += t.data;
+                }
+
+                if (t.data > 0){
+                    while (t.leftBrackets > 0){
+                        t.leftBrackets --;
+                        stringToBox += "(";
+                    }
+                }
+                stringToBox += data + " ";
+                if (t.data > 0)
+                    while (t.rightBrackets > 0){
+                        t.rightBrackets --;
+                        stringToBox += ")";
+                    }
+
+                if (t.right != null) {
+                    //t.right.leftBrackets = t.leftBrackets;
+                    t.right.rightBrackets = t.rightBrackets;
+                    if (t.data == -4 || (t.data == -3 && (t.right.data == -1 || t.right.data == -2))) {
+                        if (t.right.data < 0) {
+                            t.right.leftBrackets += 1;
+                            t.right.rightBrackets += 1;
+                        }
+                    }
+                    _print(t.right);
+                }
+            }
+
+            Treenode simple_ex(int complexity)
+            {
+                Treenode res = null;
+                for (int i = 0; i < complexity + 1; ++i)
+                {
+                    res = simle_ex_creating(complexity, res);
+                }
+                insertS(res, -5);
+                return res;
+            }
+
+            /*вставка икса в уравнение с десятичными дробями*/
+            void insertx(Treenode  t){
+                if ((t.left == null) && (t.right == null))
+                {
+                    t.left = new Treenode(t.data, null, null, t.leftBrackets, 0);
+                    t.leftBrackets = 0;
+                    t.data = -10;
+                }
+                else
+                {
+                    if (t.data == -4)
+                    {
+                        insertx(t.left);
+                    }
+                    else if (Math.random() % 2 == 0)
+                    {
+                        insertx(t.right);
+                    }
+                    else
+                    {
+                        insertx(t.left);
+                    }
+                }
+            }
+
+            /*вставка символа в конец дерева*/
+            void insertS(Treenode t, int symb){
+                if (t == null)
+                    return;
+                while (t.right != null)
+                    t = t.right;
+                t.right = new Treenode(symb);
+            }
+
+
         }
 
     }
