@@ -64,8 +64,8 @@
       <file leaf-file-name="Main.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/sample/Main.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.30107528" vertical-offset="773" max-vertical-offset="13294">
-              <caret line="59" column="55" selection-start-line="59" selection-start-column="55" selection-end-line="59" selection-end-column="55" />
+            <state vertical-scroll-proportion="0.562212" vertical-offset="10157" max-vertical-offset="13294">
+              <caret line="627" column="2" selection-start-line="627" selection-start-column="2" selection-end-line="627" selection-end-column="2" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="e#6652#6660#0" expanded="true" />
@@ -779,8 +779,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/sample/Main.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.30107528" vertical-offset="773" max-vertical-offset="13294">
-          <caret line="59" column="55" selection-start-line="59" selection-start-column="55" selection-end-line="59" selection-end-column="55" />
+        <state vertical-scroll-proportion="0.562212" vertical-offset="10157" max-vertical-offset="13294">
+          <caret line="627" column="2" selection-start-line="627" selection-start-column="2" selection-end-line="627" selection-end-column="2" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="e#6652#6660#0" expanded="true" />
@@ -795,8 +795,8 @@
         <settings>
           <artifact-editor>
             <show-content>
-              <type id="artifact" />
               <type id="library" />
+              <type id="artifact" />
             </show-content>
           </artifact-editor>
           <last-edited>Java_school:jar2</last-edited>
